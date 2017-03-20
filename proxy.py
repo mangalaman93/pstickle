@@ -7,7 +7,7 @@ import zutils
 
 def main():
     # init logger
-    logger = zutils.getLogger(__name__)
+    logger = zutils.getLogger(__file__)
 
     # zmq context
     ctx = zmq.Context()

@@ -11,7 +11,7 @@ import zutils
 
 def main():
     # init logger
-    logger = zutils.getLogger(__name__)
+    logger = zutils.getLogger(__file__)
 
     ctx = zmq.Context()
     pubsock = ctx.socket(zmq.PUB)
@@ -27,7 +27,7 @@ def main():
     # all the messages. It is not required for the correctness of the
     # system. See below link for more information -
     # http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver
-    time.sleep(1)
+    time.sleep(zconfig.WAIT_DUR)
 
     # send loop
     try:

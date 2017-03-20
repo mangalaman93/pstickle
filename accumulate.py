@@ -12,7 +12,7 @@ def main():
        accumulates set of data and forwards it to L3."""
 
     # init logger
-    logger = zutils.getLogger(__name__)
+    logger = zutils.getLogger(__file__)
 
     # socket to receive data
     ctx = zmq.Context()
@@ -23,7 +23,7 @@ def main():
     # socket to send data on
     pubsock = ctx.socket(zmq.PUB)
     pubsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.SUB_PORT))
-    time.sleep(1)
+    time.sleep(zconfig.WAIT_DUR)
 
     # stores all the accumulated data
     data = {}
