@@ -27,7 +27,7 @@ def main():
     data = {}
 
     # receive loop
-    logger.info("Started accu service")
+    logger.info("Started accumulate service")
     while True:
         try:
             [topic, message] = subsock.recv_multipart()
@@ -40,11 +40,11 @@ def main():
             else:
                 raise
         except KeyboardInterrupt:
-            logger.info("Recevied interrupt to stop accu service")
+            logger.info("Recevied interrupt to stop accumulate service")
             break
 
     # clean up
-    logger.info("Stopped accu service")
+    logger.info("Stopped accumulate service")
     subsock.close()
     pubsock.close()
     ctx.term()
