@@ -8,8 +8,8 @@ import zutils
 
 
 def main():
-    """Implements L2 component of the system which essentially
-       accumulates set of data and forwards it to L3."""
+    """Implements L3 component of the system which essentially
+       computes and forwards average of the received data points."""
 
     # init logger
     logger = zutils.getLogger(__name__)
@@ -18,18 +18,18 @@ def main():
     ctx = zmq.Context()
     subsock = ctx.socket(zmq.SUB)
     subsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.PUB_PORT))
-    subsock.setsockopt(zmq.SUBSCRIBE, str.encode(zconfig.TOPIC_GEN))
+    subsock.setsockopt(zmq.SUBSCRIBE, str.encode(zconfig.TOPIC_ACCU))
 
     # socket to send data on
     pubsock = ctx.socket(zmq.PUB)
     pubsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.SUB_PORT))
     time.sleep(1)
 
-    # stores all the accumulated data
+    # stores all the aggregated data
     data = {}
 
     # receive loop
-    logger.info("Started accumulate service")
+    logger.info("Started aggregate service")
     while True:
         try:
             [topic, message] = subsock.recv_multipart()
@@ -42,11 +42,11 @@ def main():
             else:
                 raise
         except KeyboardInterrupt:
-            logger.info("Recevied interrupt to stop accumulate service")
+            logger.info("Recevied interrupt to stop aggregate service")
             break
 
     # clean up
-    logger.info("Stopped accumulate service")
+    logger.info("Stopped aggregate service")
     subsock.close()
     pubsock.close()
     ctx.term()
@@ -54,23 +54,30 @@ def main():
 
 def process_message(data, topic, message, pubsock):
     [_, app, node] = topic.split()
-    curtime = message["time"]
 
-    if not node in data:
-        data[node] = {}
-    if not app in data[node]:
-        data[node][app] = []
-    data[node][app].append(message)
+    if not app in data:
+        data[app] = {}
 
-    if curtime % zconfig.ACCU_SIZE == 0:
-        send_event(pubsock, data[node][app], app, node)
-        data[node][app] = []  # reinitialize
+    # check if we have received the data for a node yet.
+    # if data already exists, we should first flush the
+    # existing all the data and then store more data
+    if node in data[app]:
+        aggr = 0
+        for _, item in data[app].items():
+            aggr += item
+        data[app] = {}
+        send_event(pubsock, aggr, app)
+
+    aggr = 0
+    for item in message:
+        aggr += item["requests"]
+    data[app][node] = aggr
 
 
-def send_event(pubsock, data, app, node):
+def send_event(pubsock, total_requests, app):
     # type-application-node, topics are filtered using prefix matching
-    topic = "{} {} {}".format(zconfig.TOPIC_ACCU, app, node)
-    message = json.dumps(data)
+    topic = "{} {}".format(zconfig.TOPIC_AGGR, app)
+    message = json.dumps({"total_requests": total_requests})
     pubsock.send_multipart([str.encode(topic), str.encode(message)])
 
 if __name__ == "__main__":

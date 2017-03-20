@@ -6,6 +6,7 @@ LOG_LEVEL = logging.DEBUG
 # topics
 TOPIC_GEN = "src"
 TOPIC_ACCU = "accu"
+TOPIC_AGGR = "aggr"
 
 # other
 ACCU_SIZE = 60
