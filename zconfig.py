@@ -3,6 +3,9 @@ import logging
 # log level
 LOG_LEVEL = logging.DEBUG
 
+# topics
+GEN_TOPIC = "raw"
+
 # zmq ports
 # TODO: Assuming all services run on the same host
 IP_ADDR = "127.0.0.1"

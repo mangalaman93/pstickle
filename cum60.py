@@ -13,7 +13,7 @@ def main():
     subsock = ctx.socket(zmq.SUB)
     subsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR,
                                          zconfig.PROXY_PUB_PORT))
-    subsock.setsockopt(zmq.SUBSCRIBE, b"raw")
+    subsock.setsockopt(zmq.SUBSCRIBE, str.encode(zconfig.GEN_TOPIC))
 
     logger.info("Started cum60 service")
     while True:

@@ -7,8 +7,6 @@ import zconfig
 import zmq
 import zutils
 
-TYPE_TOPIC = "raw"
-
 
 def main():
     logger = zutils.getLogger(__name__)
@@ -43,7 +41,7 @@ def main():
 
 def send_event(pubsock, curtime, app, node):
     # type-application-node, topics are filtered using prefix matching
-    topic = "{}-{}-{}".format(TYPE_TOPIC, app, node)
+    topic = "{}-{}-{}".format(zconfig.GEN_TOPIC, app, node)
     message = json.dumps({"time": curtime,
                           "node": node,
                           "app": app,
