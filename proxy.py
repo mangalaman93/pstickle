@@ -4,6 +4,7 @@ import zconfig
 import zmq
 import zutils
 
+
 def main():
     # log settings
     logger = zutils.getLogger(__name__)
@@ -13,11 +14,11 @@ def main():
 
     # proxy socket for subscribers to connect
     pubsock = ctx.socket(zmq.XPUB)
-    pubsock.bind("tcp://*:{}".format(zconfig.PROXY_PUB_PORT))
+    pubsock.bind("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.PROXY_PUB_PORT))
 
     # proxy socket for publishers to connect
     subsock = ctx.socket(zmq.XSUB)
-    subsock.bind("tcp://*:{}".format(zconfig.PROXY_SUB_PORT))
+    subsock.bind("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.PROXY_SUB_PORT))
 
     try:
         logger.info("Starting proxy service")
