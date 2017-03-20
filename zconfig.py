@@ -5,6 +5,10 @@ LOG_LEVEL = logging.DEBUG
 
 # topics
 GEN_TOPIC = "raw"
+ACCU_TOPIC = "accu"
+
+# other
+ACCU_SIZE = 60
 
 # zmq ports
 # TODO: Assuming all services run on the same host
