@@ -10,12 +10,12 @@ import zutils
 
 
 def main():
+    # init logger
     logger = zutils.getLogger(__name__)
 
     ctx = zmq.Context()
     pubsock = ctx.socket(zmq.PUB)
-    pubsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR,
-                                         zconfig.PROXY_SUB_PORT))
+    pubsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.SUB_PORT))
 
     # Node & Application IDs beginning with 0
     nodes = list(range(zconfig.NUM_NODES))
@@ -29,6 +29,7 @@ def main():
     # http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver
     time.sleep(1)
 
+    # send loop
     try:
         logger.info("Starting load generator")
         for curtime in range(zconfig.BEGIN_TIME, zconfig.END_TIME):
@@ -49,12 +50,9 @@ def main():
 
 def send_event(pubsock, curtime, app, node):
     # type-application-node, topics are filtered using prefix matching
-    topic = "{}-{}-{}".format(zconfig.GEN_TOPIC, app, node)
+    topic = "{} {} {}".format(zconfig.TOPIC_GEN, app, node)
     message = json.dumps({"time": curtime,
-                          "node": node,
-                          "app": app,
-                          "requests": random.randrange(1000)
-                          })
+                          "requests": random.randrange(100)})
     pubsock.send_multipart([str.encode(topic), str.encode(message)])
 
 if __name__ == "__main__":

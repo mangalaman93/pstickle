@@ -16,18 +16,17 @@ def main():
     # socket to receive data
     ctx = zmq.Context()
     subsock = ctx.socket(zmq.SUB)
-    subsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR,
-                                         zconfig.PROXY_PUB_PORT))
-    subsock.setsockopt(zmq.SUBSCRIBE, str.encode(zconfig.GEN_TOPIC))
+    subsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.PUB_PORT))
+    subsock.setsockopt(zmq.SUBSCRIBE, str.encode(zconfig.TOPIC_GEN))
 
     # socket to send data on
     pubsock = ctx.socket(zmq.PUB)
-    pubsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR,
-                                         zconfig.PROXY_SUB_PORT))
+    pubsock.connect("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.SUB_PORT))
 
     # stores all the accumulated data
     data = {}
 
+    # receive loop
     logger.info("Started accu service")
     while True:
         try:
@@ -47,13 +46,13 @@ def main():
     # clean up
     logger.info("Stopped accu service")
     subsock.close()
+    pubsock.close()
     ctx.term()
 
 
 def process_message(data, topic, message, pubsock):
+    [_, app, node] = topic.split()
     curtime = message["time"]
-    node = message["node"]
-    app = message["app"]
 
     if not node in data:
         data[node] = {}
@@ -68,11 +67,8 @@ def process_message(data, topic, message, pubsock):
 
 def send_event(pubsock, data, app, node):
     # type-application-node, topics are filtered using prefix matching
-    topic = "{}-{}-{}".format(zconfig.ACCU_TOPIC, app, node)
-    message = json.dumps({"node": node,
-                          "app": app,
-                          "data": data
-                          })
+    topic = "{} {} {}".format(zconfig.TOPIC_ACCU, app, node)
+    message = json.dumps(data)
     pubsock.send_multipart([str.encode(topic), str.encode(message)])
 
 if __name__ == "__main__":

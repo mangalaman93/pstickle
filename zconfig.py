@@ -4,8 +4,8 @@ import logging
 LOG_LEVEL = logging.DEBUG
 
 # topics
-GEN_TOPIC = "raw"
-ACCU_TOPIC = "accu"
+TOPIC_GEN = "src"
+TOPIC_ACCU = "accu"
 
 # other
 ACCU_SIZE = 60
@@ -13,8 +13,8 @@ ACCU_SIZE = 60
 # zmq ports
 # TODO: Assuming all services run on the same host
 IP_ADDR = "127.0.0.1"
-PROXY_SUB_PORT = 8000
-PROXY_PUB_PORT = 8001
+SUB_PORT = 8000
+PUB_PORT = 8001
 
 # simulation parameters
 NUM_NODES = 1000
