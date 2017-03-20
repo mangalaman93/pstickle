@@ -30,5 +30,10 @@ def main():
             logger.info("Recevied interrupt to stop cum60 service")
             break
 
+    # clean up
+    logger.info("Stopped cum60 service")
+    subsock.close()
+    ctx.term()
+
 if __name__ == "__main__":
     main()

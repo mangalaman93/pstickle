@@ -34,7 +34,11 @@ def main():
                 logger.debug("current time: {}".format(curtime))
     except KeyboardInterrupt:
         logger.info("Recevied interrupt to stop load generator")
-        pass
+
+    # clean up
+    logger.info("Stopped load generator")
+    pubsock.close()
+    ctx.term()
 
 
 def send_event(pubsock, curtime, app, node):

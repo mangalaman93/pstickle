@@ -26,8 +26,12 @@ def main():
         zmq.proxy(pubsock, subsock)
     except KeyboardInterrupt:
         logger.info("Recevied interrupt to stop proxy service")
-        pass
-    logger.info("Stopping proxy service")
+
+    # clean up
+    logger.info("Stopped proxy service")
+    pubsock.close()
+    subsock.close()
+    ctx.term()
 
 if __name__ == "__main__":
     main()
