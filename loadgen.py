@@ -3,6 +3,7 @@
 import itertools
 import json
 import random
+import time
 import zconfig
 import zmq
 import zutils
@@ -20,6 +21,13 @@ def main():
     nodes = list(range(zconfig.NUM_NODES))
     apps = list(range(zconfig.NUM_APPS))
     nodes_apps = list(itertools.product(nodes, apps))
+
+    # sleep for a sec, so that we have received subscriptions, if any.
+    # This is not necessary but we prefer that subscribers receive
+    # all the messages. It is not required for the correctness of the
+    # system. See below link for more information -
+    # http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver
+    time.sleep(1)
 
     try:
         logger.info("Starting load generator")
