@@ -24,6 +24,9 @@ the system.
 Following figure shows the flow of messages in the system:
 ![Components](https://raw.githubusercontent.com/mangalaman93/pstickle/master/images/flow.jpg)
 
+## How to add new drops (components)
+Simply modify `main.py` and add more drops using the `Drop` class.
+
 ## Limitations
 * `main.py` only runs on localhost
 * Doesn't stop cleanly on `ctrl+c`
