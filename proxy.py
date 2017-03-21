@@ -1,38 +1,30 @@
-#!/usr/bin/env python3
-
-import zconfig
 import zmq
-import zutils
 
 
-def main():
-    # init logger
-    logger = zutils.getLogger(__file__)
+class Proxy(object):
+    """Centralized proxy (Hub) for relaying pub-sub messages"""
 
-    # zmq context
-    ctx = zmq.Context()
+    def __init__(self, host="127.0.0.1", subport=8000, pubport=8001):
+        super(Proxy, self).__init__()
 
-    # proxy socket for subscribers to connect
-    pubsock = ctx.socket(zmq.XPUB)
-    pubsock.bind("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.PUB_PORT))
+        # zmq context
+        self.ctx = zmq.Context()
 
-    # proxy socket for publishers to connect
-    subsock = ctx.socket(zmq.XSUB)
-    subsock.bind("tcp://{}:{}".format(zconfig.IP_ADDR, zconfig.SUB_PORT))
+        # proxy socket for subscribers to connect
+        self.pubsock = self.ctx.socket(zmq.XPUB)
+        self.pubsock.bind("tcp://{}:{}".format(host, pubport))
 
-    # proxy loop
-    try:
-        logger.info("Starting proxy service")
-        logger.info("Hit Ctrl-C (or send SIGKILL) to stop the service!")
-        zmq.proxy(pubsock, subsock)
-    except KeyboardInterrupt:
-        logger.info("Recevied interrupt to stop proxy service")
+        # proxy socket for publishers to connect
+        self.subsock = self.ctx.socket(zmq.XSUB)
+        self.subsock.bind("tcp://{}:{}".format(host, subport))
 
-    # clean up
-    logger.info("Stopped proxy service")
-    pubsock.close()
-    subsock.close()
-    ctx.term()
+    def start(self):
+        try:
+            zmq.proxy(self.pubsock, self.subsock)
+        except KeyboardInterrupt:
+            pass
 
-if __name__ == "__main__":
-    main()
+    def cleanup(self):
+        self.pubsock.close()
+        self.subsock.close()
+        self.ctx.term()
